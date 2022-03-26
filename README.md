@@ -4,9 +4,8 @@
 - MySQL
 - PHP >= 8.0
 
-## 搭建
-### 二、配置
-一、数据库（配置根目录下 .env 文件）
+## 配置
+数据库（配置根目录下 .env 文件）
 ```
 DB_CONNECTION=mysql
 // host地址
@@ -56,7 +55,26 @@ return $this->successPaginate($data);
 ```
 ## 统一表单参数输入校验
 
-使用案例：
+### 使用
+1、验证参数是否为ID
+```php
+$this->verifyId('key');
+```
+2、验证参数是否为整数
+```php
+$this->verifyInteger('key');
+```
+3、验证参数是否为字符串
+```php
+$this->verifyString('key');
+```
+4、验证参数是否为布尔值
+```php
+$this->verifyBoolean('key');
+```
+....
+
+### 案例
 有一个 ```index``` 方法，我们在获取参数时使用 ```verifyId``` 来校验请求的参数
 ```php
 public function index()
