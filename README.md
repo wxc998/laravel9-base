@@ -1,64 +1,150 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400"></a></p>
+## 环境
 
-<p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+- Nginx/Apache
+- MySQL
+- PHP >= 8.0
 
-## About Laravel
+## 搭建
+### 二、配置
+一、数据库（配置根目录下 .env 文件）
+```
+DB_CONNECTION=mysql
+// host地址
+DB_HOST=127.0.0.1
+// 端口号
+DB_PORT=3306
+// 数据库名
+DB_DATABASE=laravel9
+// 用户名
+DB_USERNAME=root
+// 密码
+DB_PASSWORD=
+```
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## 扩展包
+只安装了项目最常用的几个，如果有需要可以从下面链接里看一下
+[下载量最高的 100 个 Laravel 扩展包推荐](https://learnku.com/laravel/t/2530/the-highest-amount-of-downloads-of-the-100-laravel-extensions-recommended)
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- 代码提示工具
+```laravel-ide-helper```
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
 
-## Learning Laravel
+- 语言包
+```caouecs/laravel-lang```
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- 开发调试利器（debugbar 在 dev 环境安装）
+  ```laravel-debugbar```
 
-## Laravel Sponsors
+## 统一 Response 响应
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+1、返回成功信息
+```php
+return $this->success($data);
+```
+2、返回失败信息
+```php
+return $this->fail($codeResponse);
+```
+3、抛出异常
+```php
+$this->throwBusinessException($codeResponse);
+```
+4、分页
+```php
+return $this->successPaginate($data);
+```
+## 统一表单参数输入校验
 
-### Premium Partners
+使用案例：
+有一个 ```index``` 方法，我们在获取参数时使用 ```verifyId``` 来校验请求的参数
+```php
+public function index()
+{
+    $id = $this->verifyId('id', null);
+}
+```
+当我们请求时，因为传入的参数是字符串
+```
+http://127.0.0.1:8000/api/user/index?id=xddd
+```
+所以返回 ```The id must be an integer``` ，提示id必须为整数
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+![Laravel9 开发 API 总结](https://cdn.learnku.com/uploads/images/202203/15/69325/73Yf2SI32F.png!large)
 
-## Contributing
+## 服务层 Service
+如果项目比较小，接口较少，业务逻辑放在 controller 和 model 层就可以。否则就需要创建一个 Service 层来存放一些较复杂些的业务逻辑。
+一、在 ```app``` 目录下，创建名叫 ```Services``` 的文件夹
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+![Laravel 开发 API 心得](https://cdn.learnku.com/uploads/images/202203/16/69325/GSPYII6h0q.png!large)
 
-## Code of Conduct
+二、在新创建的 ```Services``` 目录下创建基类 ```BaseService.php``` ，采用单例模式避免对内存造成浪费，也方便调用
+```php
+<?php
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+namespace App\Services;
 
-## Security Vulnerabilities
+use App\Helpers\ApiResponse;
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+class BaseService
+{
+    // 引入api统一返回消息
+    use ApiResponse;
 
-## License
+    protected static $instance;
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+    public static function getInstance()
+    {
+        if (static::$instance instanceof static){
+            return self::$instance;
+        }
+        static::$instance = new static();
+        return self::$instance;
+    }
+
+    protected function __construct(){}
+
+    protected function __clone(){}
+
+}
+
+```
+三、使用
+例如要实现一个获取用户信息的功能
+1、在 Service 层创建一个 ```UserService.php``` 的文件
+```php
+<?php
+
+namespace App\Services;
+
+use App\Services\BaseService;
+
+class UserService extends BaseService
+{
+    // 获取用户信息
+    public function getUserInfo()
+    {
+        return ['id' => 1, 'nickname' => '张三', 'age' => 18];
+    }
+
+}
+```
+2、在控制器 ```UserController``` 中增加一个 ```info``` 方法，并调用服务层中的 getUserInfo() 方法
+```php
+use App\Services\UserService;
+
+public function info()
+{
+    $user = UserService::getInstance()->getUserInfo();
+    return $this->success($user);
+}
+```
+3、返回
+
+![Laravel 开发 API 心得](https://cdn.learnku.com/uploads/images/202203/16/69325/D1dnCY6rNp.png!large)
+
+## 博客
+[博客地址](https://blog.konghou.xyz/article/192 "博客")
+
+## 不喜勿喷，如有错误或建议欢迎指出提出，持续更新中...
+
