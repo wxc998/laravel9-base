@@ -14,14 +14,13 @@ use App\Http\Controllers\Api\UserController;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-Route::group(['prefix' => 'user'], function (Router $router) {
+Route::controller(UserController::class)->prefix('user')->group(function (Router $router) {
     // 注册
-    $router->post('register', [UserController::class, 'register']);
+    $router->post('register', 'register');
     // 登录
-    $router->get('login', [UserController::class, 'login']);
+    $router->get('login', 'login');
     // 退出
-    $router->get('logout', [UserController::class, 'logout'])->middleware('auth:sanctum');
+    $router->get('logout', 'logout')->middleware('auth:sanctum');
     // 信息
-    $router->get('info', [UserController::class, 'info'])->middleware('auth:sanctum');
+    $router->get('info', 'info')->middleware(['auth:sanctum']);
 });
-
