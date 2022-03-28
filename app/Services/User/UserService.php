@@ -14,10 +14,11 @@ class UserService extends BaseService
     // 存储用户信息
     public function store(array $params)
     {
-        $user = new User();
-        $user->mobile = $params['mobile'];
-        $user->password = bcrypt($params['password']);
-        if (!$user->save()){
+        $user = User::query()->create([
+            'mobile' => $params['mobile'],
+            'password' => bcrypt($params['password']),
+        ]);
+        if (!$user){
             $this->throwBusinessException(ResponseEnum::USER_SERVICE_REGISTER_ERROR);
         }
     }
