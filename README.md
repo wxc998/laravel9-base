@@ -1,3 +1,4 @@
+github未及时更新，请移步gitee：https://gitee.com/wangfor/laravel9-basic-project
 ## 环境
 
 - Nginx/Apache
